@@ -1,1 +1,10 @@
-{}
+{
+  "description": "This web application offers tools for shiny hunting enthusiasts, providing a user-friendly interface to track and optimize their Pokémon hunting efforts.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
