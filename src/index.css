@@ -1,1 +1,115 @@
-@import 'tailwindcss';
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap");
+@import "tailwindcss";
+
+:root {
+  font-family: "DM Sans", sans-serif;
+  color: #e9ecf3;
+  background: #090b10;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; min-height: 100vh; background: radial-gradient(circle at 50% -15%, #20253a 0, #0d1017 42%, #090b10 72%); }
+button, input { font: inherit; }
+button { cursor: pointer; }
+.icon { width: 1.25rem; height: 1.25rem; flex: none; }
+.app-shell { min-height: 100vh; overflow: hidden; }
+.topbar { height: 5rem; padding: 0 max(1.5rem, calc((100vw - 74rem) / 2)); border-bottom: 1px solid #262a35; display: flex; align-items: center; justify-content: space-between; background: rgba(9,11,16,.82); backdrop-filter: blur(18px); }
+.brand { display: flex; align-items: center; gap: .8rem; font-family: "Manrope", sans-serif; }
+.brand-mark { width: 2.4rem; height: 2.4rem; display: grid; place-items: center; border-radius: .75rem; color: #101217; background: linear-gradient(135deg,#f8df70,#d9a92e); box-shadow: 0 0 1.5rem rgba(232,190,61,.18); }
+.brand-mark .icon { width: 1.35rem; }
+.brand div { display: flex; flex-direction: column; line-height: 1; letter-spacing: .08em; }
+.brand strong { font-size: .95rem; }
+.brand div span { font-size: .62rem; color: #9a9eaa; letter-spacing: .3em; margin-top: .3rem; }
+.status { display: flex; align-items: center; gap: .5rem; color: #8f94a0; font-size: .78rem; }
+.status span { width: .45rem; height: .45rem; border-radius: 50%; background: #63d6a0; box-shadow: 0 0 .7rem #63d6a0; }
+main { width: min(74rem, calc(100% - 3rem)); margin: auto; }
+.intro { text-align: center; padding: 5rem 1rem 3rem; position: relative; }
+.intro::before { content: ""; position: absolute; width: 28rem; height: 14rem; background: #d4ae3d; filter: blur(9rem); opacity: .08; left: 50%; top: 20%; transform: translateX(-50%); pointer-events: none; }
+.eyebrow { display: flex; align-items: center; justify-content: center; gap: .45rem; color: #e2bf50 !important; font-size: .72rem !important; font-weight: 700; letter-spacing: .2em; }
+.eyebrow .icon { width: .9rem; }
+.intro h1 { font-family: "Manrope", sans-serif; font-size: clamp(2.6rem,6vw,4.8rem); line-height: 1.03; letter-spacing: -.055em; margin: 1rem 0; background: linear-gradient(180deg,#fff,#b8bcc8); -webkit-background-clip: text; color: transparent; }
+.intro > p { color: #888d99; font-size: 1rem; margin: 0 auto; max-width: 38rem; line-height: 1.7; }
+.dashboard { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(19rem,.75fr); gap: 1rem; align-items: stretch; }
+.hunt-card, .settings-card, .collection { border: 1px solid #292d38; background: linear-gradient(145deg,rgba(24,27,36,.95),rgba(15,17,24,.98)); border-radius: 1.5rem; box-shadow: 0 1.8rem 5rem rgba(0,0,0,.22); }
+.hunt-card { padding: 1.5rem; }
+.pokemon-search { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid #2b303b; background: #12151c; border-radius: 1rem; }
+.pokemon-avatar { width: 4.5rem; height: 4.5rem; flex: none; display: grid; place-items: center; border-radius: .8rem; color: #d9b64a; background: radial-gradient(circle,#353029,#1a1b20); }
+.pokemon-avatar img { width: 5rem; height: 5rem; object-fit: contain; image-rendering: pixelated; }
+.pokemon-avatar .icon { width: 1.7rem; height: 1.7rem; }
+.pokemon-search label { flex: 1; min-width: 0; }
+.pokemon-search label > span, .counter-block > span, .section-heading p { display: block; color: #777d8a; font-size: .65rem; font-weight: 700; letter-spacing: .14em; margin-bottom: .45rem; }
+.input-wrap { display: flex; align-items: center; gap: .5rem; }
+.input-wrap .icon { color: #686e7a; }
+input { width: 100%; border: 0; outline: 0; background: transparent; color: #f4f5f8; font-family: "Manrope",sans-serif; font-size: 1.05rem; font-weight: 700; }
+input::placeholder { color: #535864; }
+label small { display: block; color: #df7777; margin-top: .35rem; font-size: .72rem; }
+.counter-block { display: flex; flex-direction: column; align-items: center; padding: 2.75rem 1rem 2.4rem; }
+.counter-block strong { font-family: "Manrope",sans-serif; font-size: clamp(4.5rem,10vw,7.5rem); line-height: 1; letter-spacing: -.07em; }
+.probability-pill { display: flex; align-items: center; gap: .4rem; color: #d8bb62; background: rgba(216,187,98,.08); border: 1px solid rgba(216,187,98,.18); padding: .5rem .8rem; border-radius: 999px; font-size: .75rem; margin-top: 1.25rem; }
+.probability-pill .icon { width: .8rem; height: .8rem; }
+.primary-action { width: 100%; border: 0; border-radius: .9rem; padding: 1rem; font-family: "Manrope",sans-serif; font-weight: 800; color: #15130c; background: linear-gradient(135deg,#f4db72,#cfa12a); box-shadow: 0 .6rem 2rem rgba(213,172,48,.15); transition: transform .15s,filter .15s; }
+.primary-action span { font-size: 1.15rem; margin-right: .35rem; }
+.primary-action:hover { filter: brightness(1.08); transform: translateY(-2px); }
+.secondary-actions { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .75rem; }
+.secondary-actions button { display: flex; align-items: center; justify-content: center; gap: .4rem; border: 1px solid #303541; border-radius: .8rem; padding: .7rem; color: #aeb2bd; background: #171a22; font-size: .78rem; font-weight: 600; }
+.secondary-actions button:hover { color: #fff; border-color: #4a505e; }
+.secondary-actions .icon { width: 1rem; }
+.settings-card { padding: 1.5rem; }
+.section-heading { display: flex; align-items: center; gap: .8rem; }
+.section-heading > span { width: 2.6rem; height: 2.6rem; display: grid; place-items: center; color: #dbb748; border-radius: .8rem; background: rgba(219,183,72,.1); }
+.section-heading p { margin: 0 0 .15rem; color: #b09236; }
+.section-heading h2 { margin: 0; font-family: "Manrope",sans-serif; font-size: 1.05rem; }
+.odds-list { display: flex; flex-direction: column; gap: .5rem; margin: 1.5rem 0; }
+.odds-list button { display: flex; align-items: center; gap: .75rem; text-align: left; color: #aeb2bd; padding: .75rem; border: 1px solid transparent; border-radius: .8rem; background: transparent; }
+.odds-list button:hover { background: #181b23; }
+.odds-list button.selected { color: #f1f2f5; background: rgba(216,181,69,.08); border-color: rgba(216,181,69,.3); }
+.radio { width: .9rem; height: .9rem; border: 1px solid #555b68; border-radius: 50%; }
+.selected .radio { border: .26rem solid #dcb848; }
+.odds-list button > span:last-child { display: flex; flex-direction: column; gap: .1rem; }
+.odds-list strong { font-size: .8rem; }
+.odds-list small { color: #686e7a; font-size: .7rem; }
+.progress-card { padding: 1rem; background: #11141a; border: 1px solid #252a34; border-radius: .9rem; }
+.progress-card > div:first-child { display: flex; justify-content: space-between; font-size: .72rem; color: #969ba6; }
+.progress-card strong { color: #dabc5e; }
+.progress-track { height: .35rem; overflow: hidden; border-radius: 99px; background: #2a2d34; margin: .7rem 0; }
+.progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#c99c29,#f0da76); transition: width .3s; }
+.progress-card p { color: #646a76; font-size: .65rem; margin: 0; }
+.catch-button { width: 100%; display: flex; align-items: center; justify-content: center; gap: .5rem; color: #8d7440; background: transparent; border: 1px solid #4b4029; border-radius: .8rem; padding: .8rem; margin-top: .8rem; font-size: .76rem; font-weight: 700; }
+.catch-button:not(:disabled) { color: #17130b; background: #d9b64a; border-color: #d9b64a; }
+.catch-button:disabled { cursor: not-allowed; opacity: .55; }
+.catch-button .icon { width: .95rem; }
+.collection { margin: 1rem 0 5rem; padding: 1.5rem; }
+.collection-header { display: flex; align-items: center; justify-content: space-between; }
+.count-badge { color: #8e939e; background: #1c2029; padding: .4rem .75rem; border-radius: 999px; font-size: .7rem; }
+.empty-state { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 3.5rem 1rem 2.5rem; }
+.empty-state > span { width: 3.5rem; height: 3.5rem; display: grid; place-items: center; color: #69614a; border: 1px dashed #494538; border-radius: 50%; }
+.empty-state h3 { font-family: "Manrope",sans-serif; font-size: 1rem; margin: 1rem 0 .35rem; }
+.empty-state p { max-width: 24rem; color: #676d78; font-size: .78rem; line-height: 1.6; margin: 0; }
+.trophy-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: .75rem; margin-top: 1.5rem; }
+.trophy-card { display: flex; align-items: center; gap: .8rem; padding: .85rem; border-radius: 1rem; background: #11141a; border: 1px solid #272c36; }
+.trophy-sprite { width: 4rem; height: 4rem; flex: none; display: grid; place-items: center; border-radius: .7rem; color: #d8b54a; background: #1d1f24; }
+.trophy-sprite img { width: 4.5rem; image-rendering: pixelated; }
+.trophy-card > div:nth-child(2) { min-width: 0; flex: 1; }
+.trophy-card small { color: #b3963d; font-size: .58rem; letter-spacing: .08em; }
+.trophy-card h3 { margin: .1rem 0; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize; font-family: "Manrope",sans-serif; font-size: .95rem; }
+.trophy-card p { margin: 0; color: #737986; font-size: .68rem; }
+.trophy-card button { color: #5d626d; border: 0; background: transparent; padding: .4rem; }
+.trophy-card button:hover { color: #df7777; }
+.trophy-card button .icon { width: 1rem; }
+footer { min-height: 7rem; display: flex; align-items: center; justify-content: center; gap: 1.5rem; border-top: 1px solid #20242d; color: #565c67; font-size: .7rem; }
+footer span { color: #8b7741; font-weight: 700; letter-spacing: .12em; }
+footer small { padding-left: 1.5rem; border-left: 1px solid #292d36; }
+@media (max-width: 760px) {
+  .topbar { padding: 0 1.25rem; }
+  .status { font-size: 0; }
+  main { width: min(100% - 1.5rem, 36rem); }
+  .intro { padding: 3.5rem .5rem 2rem; }
+  .dashboard { grid-template-columns: 1fr; }
+  .counter-block { padding-block: 2.25rem; }
+  .trophy-grid { grid-template-columns: 1fr; }
+  .collection { margin-bottom: 2rem; }
+  footer { flex-direction: column; gap: .35rem; padding: 1.5rem; }
+  footer p { margin: 0; }
+  footer small { border: 0; padding: 0; }
+}
