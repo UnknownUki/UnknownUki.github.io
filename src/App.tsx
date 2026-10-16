@@ -11,12 +11,22 @@ type Trophy = {
 
 type IconProps = { name: "sparkle" | "search" | "minus" | "rotate" | "trophy" | "target" | "clock" | "trash" };
 
-const oddsOptions = [
-  { value: 4096, label: "Probabilidad base", detail: "1 / 4.096" },
-  { value: 1365, label: "Amuleto Iris", detail: "1 / 1.365" },
-  { value: 683, label: "Método Masuda", detail: "1 / 683" },
-  { value: 512, label: "Masuda + Amuleto", detail: "1 / 512" },
-];
+type Era = "classic" | "modern";
+
+const oddsByEra = {
+  classic: [
+    { value: 8192, label: "Probabilidad base", detail: "1 / 8.192" },
+    { value: 2731, label: "Amuleto Iris (Gen. V)", detail: "1 / 2.731" },
+    { value: 1638, label: "Método Masuda", detail: "1 / 1.638" },
+    { value: 1024, label: "Masuda + Amuleto", detail: "1 / 1.024" },
+  ],
+  modern: [
+    { value: 4096, label: "Probabilidad base", detail: "1 / 4.096" },
+    { value: 1365, label: "Amuleto Iris", detail: "1 / 1.365" },
+    { value: 683, label: "Método Masuda", detail: "1 / 683" },
+    { value: 512, label: "Masuda + Amuleto", detail: "1 / 512" },
+  ],
+};
 
 function Icon({ name }: IconProps) {
   const paths = {
@@ -35,10 +45,13 @@ function Icon({ name }: IconProps) {
 function App() {
   const [count, setCount] = useState(0);
   const [name, setName] = useState("");
+  const [era, setEra] = useState<Era>("modern");
   const [odds, setOdds] = useState(4096);
   const [sprite, setSprite] = useState("");
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [pokemonNames, setPokemonNames] = useState<string[]>([]);
+  const [searchFocused, setSearchFocused] = useState(false);
   const [trophies, setTrophies] = useState<Trophy[]>([]);
   const [ready, setReady] = useState(false);
 
@@ -48,6 +61,7 @@ function App() {
       setCount(saved.count || 0);
       setName(saved.currentPokemon || "");
       setOdds(Number(saved.currentOdds) || 4096);
+      setEra(saved.era || (Number(saved.currentOdds) > 4096 ? "classic" : "modern"));
       setTrophies(saved.trophies || []);
     } finally {
       setReady(true);
@@ -60,9 +74,17 @@ function App() {
       count,
       currentPokemon: name,
       currentOdds: odds,
+      era,
       trophies,
     }));
-  }, [count, name, odds, trophies, ready]);
+  }, [count, name, odds, era, trophies, ready]);
+
+  useEffect(() => {
+    fetch("https://pokeapi.co/api/v2/pokemon-species?limit=2000")
+      .then((response) => response.json())
+      .then((data) => setPokemonNames(data.results.map((pokemon: { name: string }) => pokemon.name)))
+      .catch(() => setPokemonNames([]));
+  }, []);
 
   useEffect(() => {
     if (!name.trim()) {
@@ -90,7 +112,21 @@ function App() {
 
   const probability = useMemo(() => (1 - Math.pow(1 - 1 / odds, count)) * 100, [count, odds]);
   const expectedProgress = Math.min((count / odds) * 100, 100);
-  const selectedOdds = oddsOptions.find((option) => option.value === odds)!;
+  const oddsOptions = oddsByEra[era];
+  const selectedOdds = oddsOptions.find((option) => option.value === odds) || oddsOptions[0];
+  const suggestions = useMemo(() => {
+    const query = name.toLowerCase().trim();
+    if (!query || pokemonNames.includes(query)) return [];
+    return pokemonNames
+      .filter((pokemon) => pokemon.startsWith(query))
+      .concat(pokemonNames.filter((pokemon) => !pokemon.startsWith(query) && pokemon.includes(query)))
+      .slice(0, 6);
+  }, [name, pokemonNames]);
+
+  const selectEra = (nextEra: Era) => {
+    setEra(nextEra);
+    setOdds(oddsByEra[nextEra][0].value);
+  };
 
   const saveCatch = () => {
     if (!name.trim() || count < 1) return;
@@ -132,7 +168,12 @@ function App() {
               </div>
               <label>
                 <span>POKÉMON OBJETIVO</span>
-                <div className="input-wrap"><Icon name="search" /><input value={name} onChange={(event) => setName(event.target.value)} placeholder="Ej. charmander" autoComplete="off" /></div>
+                <div className="input-wrap"><Icon name="search" /><input value={name} onChange={(event) => setName(event.target.value)} onFocus={() => setSearchFocused(true)} onBlur={() => window.setTimeout(() => setSearchFocused(false), 150)} placeholder="Escribe un nombre..." autoComplete="off" role="combobox" aria-expanded={searchFocused && suggestions.length > 0} aria-controls="pokemon-suggestions" /></div>
+                {searchFocused && suggestions.length > 0 && (
+                  <div className="suggestions" id="pokemon-suggestions" role="listbox">
+                    {suggestions.map((pokemon) => <button key={pokemon} role="option" onMouseDown={() => setName(pokemon)}><Icon name="search" /><span>{pokemon.replaceAll("-", " ")}</span></button>)}
+                  </div>
+                )}
                 {notFound && <small>No encontramos ese Pokémon. Revisa el nombre.</small>}
               </label>
             </div>
@@ -154,6 +195,13 @@ function App() {
 
           <aside className="settings-card">
             <div className="section-heading"><span><Icon name="target" /></span><div><p>CONFIGURACIÓN</p><h2>Método de caza</h2></div></div>
+            <div className="generation-selector">
+              <span>GENERACIÓN DEL JUEGO</span>
+              <div>
+                <button className={era === "classic" ? "active" : ""} onClick={() => selectEra("classic")}><strong>Gen. I–V</strong><small>Base 1/8.192</small></button>
+                <button className={era === "modern" ? "active" : ""} onClick={() => selectEra("modern")}><strong>Gen. VI–IX</strong><small>Base 1/4.096</small></button>
+              </div>
+            </div>
             <div className="odds-list">
               {oddsOptions.map((option) => (
                 <button key={option.value} className={odds === option.value ? "selected" : ""} onClick={() => setOdds(option.value)}>

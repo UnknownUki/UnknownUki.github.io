@@ -37,13 +37,17 @@ main { width: min(74rem, calc(100% - 3rem)); margin: auto; }
 .pokemon-avatar { width: 4.5rem; height: 4.5rem; flex: none; display: grid; place-items: center; border-radius: .8rem; color: #d9b64a; background: radial-gradient(circle,#353029,#1a1b20); }
 .pokemon-avatar img { width: 5rem; height: 5rem; object-fit: contain; image-rendering: pixelated; }
 .pokemon-avatar .icon { width: 1.7rem; height: 1.7rem; }
-.pokemon-search label { flex: 1; min-width: 0; }
+.pokemon-search label { flex: 1; min-width: 0; position: relative; }
 .pokemon-search label > span, .counter-block > span, .section-heading p { display: block; color: #777d8a; font-size: .65rem; font-weight: 700; letter-spacing: .14em; margin-bottom: .45rem; }
 .input-wrap { display: flex; align-items: center; gap: .5rem; }
 .input-wrap .icon { color: #686e7a; }
 input { width: 100%; border: 0; outline: 0; background: transparent; color: #f4f5f8; font-family: "Manrope",sans-serif; font-size: 1.05rem; font-weight: 700; }
 input::placeholder { color: #535864; }
 label small { display: block; color: #df7777; margin-top: .35rem; font-size: .72rem; }
+.suggestions { position: absolute; z-index: 20; top: calc(100% + .7rem); left: -.5rem; right: -.5rem; padding: .4rem; border: 1px solid #343946; border-radius: .8rem; background: #171a22; box-shadow: 0 1rem 2.5rem rgba(0,0,0,.45); }
+.suggestions button { width: 100%; display: flex; align-items: center; gap: .65rem; padding: .65rem .7rem; color: #c7cad2; border: 0; border-radius: .55rem; background: transparent; text-align: left; text-transform: capitalize; }
+.suggestions button:hover { color: #f2d675; background: #242833; }
+.suggestions .icon { width: .9rem; color: #686e7a; }
 .counter-block { display: flex; flex-direction: column; align-items: center; padding: 2.75rem 1rem 2.4rem; }
 .counter-block strong { font-family: "Manrope",sans-serif; font-size: clamp(4.5rem,10vw,7.5rem); line-height: 1; letter-spacing: -.07em; }
 .probability-pill { display: flex; align-items: center; gap: .4rem; color: #d8bb62; background: rgba(216,187,98,.08); border: 1px solid rgba(216,187,98,.18); padding: .5rem .8rem; border-radius: 999px; font-size: .75rem; margin-top: 1.25rem; }
@@ -60,7 +64,15 @@ label small { display: block; color: #df7777; margin-top: .35rem; font-size: .72
 .section-heading > span { width: 2.6rem; height: 2.6rem; display: grid; place-items: center; color: #dbb748; border-radius: .8rem; background: rgba(219,183,72,.1); }
 .section-heading p { margin: 0 0 .15rem; color: #b09236; }
 .section-heading h2 { margin: 0; font-family: "Manrope",sans-serif; font-size: 1.05rem; }
-.odds-list { display: flex; flex-direction: column; gap: .5rem; margin: 1.5rem 0; }
+.generation-selector { margin-top: 1.5rem; }
+.generation-selector > span { display: block; margin-bottom: .45rem; color: #777d8a; font-size: .6rem; font-weight: 700; letter-spacing: .12em; }
+.generation-selector > div { display: grid; grid-template-columns: 1fr 1fr; gap: .4rem; padding: .3rem; border-radius: .8rem; background: #11141a; border: 1px solid #252a34; }
+.generation-selector button { display: flex; flex-direction: column; align-items: center; gap: .1rem; padding: .6rem .25rem; color: #747a86; background: transparent; border: 1px solid transparent; border-radius: .6rem; }
+.generation-selector button.active { color: #f1f2f5; border-color: rgba(216,181,69,.28); background: rgba(216,181,69,.1); }
+.generation-selector strong { font-size: .72rem; }
+.generation-selector small { font-size: .6rem; color: #747a86; }
+.generation-selector button.active small { color: #c5a94f; }
+.odds-list { display: flex; flex-direction: column; gap: .35rem; margin: 1rem 0; }
 .odds-list button { display: flex; align-items: center; gap: .75rem; text-align: left; color: #aeb2bd; padding: .75rem; border: 1px solid transparent; border-radius: .8rem; background: transparent; }
 .odds-list button:hover { background: #181b23; }
 .odds-list button.selected { color: #f1f2f5; background: rgba(216,181,69,.08); border-color: rgba(216,181,69,.3); }
