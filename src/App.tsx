@@ -12,6 +12,7 @@ type Trophy = {
 type IconProps = { name: "sparkle" | "search" | "minus" | "rotate" | "trophy" | "target" | "clock" | "trash" | "book" | "home" | "close" };
 
 type Era = "classic" | "modern";
+type GuideGeneration = keyof typeof generationGuides;
 
 const oddsByEra = {
   classic: [
@@ -27,6 +28,72 @@ const oddsByEra = {
     { value: 512, label: "Masuda + Amuleto", detail: "1 / 512" },
   ],
 };
+
+const generationGuides = {
+  1: {
+    label: "Gen. I",
+    games: "Rojo, Azul y Amarillo",
+    odds: "No existen shiny visibles",
+    method: "En estos juegos no existe la mecánica shiny. En las versiones de Consola Virtual, algunos Pokémon pueden convertirse en shiny al transferirse según sus valores internos.",
+    tip: "Si juegas en cartucho original, no cuentes encuentros: el cambio de color no existe en esta generación.",
+  },
+  2: {
+    label: "Gen. II",
+    games: "Oro, Plata y Cristal",
+    odds: "Base: 1 / 8.192",
+    method: "Encuentros aleatorios, reinicios y crianza basada en valores internos. La herencia de estos valores puede mejorar mucho las opciones al criar con un progenitor shiny.",
+    tip: "Comprueba los valores y el género de los progenitores antes de iniciar una crianza larga.",
+  },
+  3: {
+    label: "Gen. III",
+    games: "Rubí, Zafiro, Esmeralda, Rojo Fuego y Verde Hoja",
+    odds: "Base: 1 / 8.192",
+    method: "Encuentros aleatorios y reinicio suave. Esmeralda tiene particularidades de RNG, así que repetir siempre el mismo reinicio puede producir resultados muy parecidos.",
+    tip: "En Esmeralda, infórmate sobre el RNG del cartucho y alterna el tiempo de entrada al encuentro.",
+  },
+  4: {
+    label: "Gen. IV",
+    games: "Diamante, Perla, Platino, HeartGold y SoulSilver",
+    odds: "Base: 1 / 8.192",
+    method: "Se estrenan el Método Masuda y el Poké Radar. En el Radar, mantener una cadena de 40 genera parches shiny con una probabilidad muy mejorada.",
+    tip: "Con Poké Radar, elige parches lejanos y lleva muchos Repelentes para proteger la cadena.",
+  },
+  5: {
+    label: "Gen. V",
+    games: "Negro, Blanco, Negro 2 y Blanco 2",
+    odds: "Base: 1 / 8.192",
+    method: "El Método Masuda mejora y Negro 2/Blanco 2 introducen el Amuleto Iris. También puedes aprovechar zonas de hierba doble para revisar dos Pokémon a la vez.",
+    tip: "El Amuleto Iris solo está disponible en Negro 2 y Blanco 2, no en los primeros Negro y Blanco.",
+  },
+  6: {
+    label: "Gen. VI",
+    games: "X, Y, Rubí Omega y Zafiro Alfa",
+    odds: "Base: 1 / 4.096",
+    method: "Poké Radar, pesca encadenada, hordas y Safari Amistad en X/Y; DexNav en ROZA. Masuda y Amuleto Iris también pueden combinarse.",
+    tip: "Para pesca encadenada, usa Ventosas y no te muevas ni falles una captura de anzuelo.",
+  },
+  7: {
+    label: "Gen. VII",
+    games: "Sol, Luna, Ultrasol y Ultraluna",
+    odds: "Base: 1 / 4.096",
+    method: "Las cadenas SOS aumentan las tiradas shiny al encadenar llamadas de ayuda. En Ultrasol/Ultraluna, los Ultraumbrales ofrecen otra vía con probabilidades propias.",
+    tip: "En SOS, usa Nerviosfera y prepara una estrategia de Cosecha con Baya Zanama para evitar que el Pokémon se debilite.",
+  },
+  8: {
+    label: "Gen. VIII",
+    games: "Espada, Escudo, Diamante Brillante, Perla Reluciente y Leyendas: Arceus",
+    odds: "Base habitual: 1 / 4.096",
+    method: "Aventuras Dinamax, Poké Radar en DBPR y apariciones masivas en Leyendas: Arceus. Con Amuleto Iris, cada Pokémon de una Aventura Dinamax puede llegar a 1/100.",
+    tip: "En Aventuras Dinamax, captura todos los Pokémon y comprueba si son shiny solo en la pantalla final.",
+  },
+  9: {
+    label: "Gen. IX",
+    games: "Escarlata y Púrpura",
+    odds: "Base: 1 / 4.096",
+    method: "Los brotes masivos mejoran tras 30 y 60 derrotas. El Poder Variocolor de los bocadillos y el Amuleto Iris añaden tiradas; combinados pueden alcanzar aproximadamente 1/512.",
+    tip: "Guarda antes de preparar el bocadillo y usa el modo «Enviar Pokémon» para llegar a 60 en un brote sin derrotar un shiny.",
+  },
+} as const;
 
 const guideSections = [
   {
@@ -108,6 +175,8 @@ function App() {
   const [view, setView] = useState<"tracker" | "guides">(() => window.location.hash === "#guias" ? "guides" : "tracker");
   const [activeGuide, setActiveGuide] = useState("fundamentos");
   const [confirmReset, setConfirmReset] = useState(false);
+  const [encounterStep, setEncounterStep] = useState(1);
+  const [guideGeneration, setGuideGeneration] = useState<GuideGeneration>(9);
 
   useEffect(() => {
     try {
@@ -117,6 +186,7 @@ function App() {
       setOdds(Number(saved.currentOdds) || 4096);
       setEra(saved.era || (Number(saved.currentOdds) > 4096 ? "classic" : "modern"));
       setTrophies(saved.trophies || []);
+      setEncounterStep(Math.max(1, Number(saved.encounterStep) || 1));
     } finally {
       setReady(true);
     }
@@ -136,8 +206,9 @@ function App() {
       currentOdds: odds,
       era,
       trophies,
+      encounterStep,
     }));
-  }, [count, name, odds, era, trophies, ready]);
+  }, [count, name, odds, era, trophies, encounterStep, ready]);
 
   useEffect(() => {
     fetch("https://pokeapi.co/api/v2/pokemon-species?limit=2000")
@@ -186,6 +257,11 @@ function App() {
   const selectEra = (nextEra: Era) => {
     setEra(nextEra);
     setOdds(oddsByEra[nextEra][0].value);
+  };
+
+  const readPositiveInteger = (value: string, fallback = 0) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? Math.max(0, Math.floor(parsed)) : fallback;
   };
 
   const navigate = (nextView: "tracker" | "guides") => {
@@ -249,16 +325,44 @@ function App() {
             </div>
 
             <div className="counter-block">
-              <span>ENCUENTROS</span>
-              <strong>{count.toLocaleString("es-ES")}</strong>
+              <label htmlFor="encounter-total">ENCUENTROS · PUEDES EDITAR EL TOTAL</label>
+              <input
+                id="encounter-total"
+                className="counter-input"
+                type="number"
+                min="0"
+                inputMode="numeric"
+                value={count}
+                onChange={(event) => setCount(readPositiveInteger(event.target.value))}
+                aria-label="Total de encuentros"
+              />
               <div className="probability-pill"><Icon name="sparkle" /> {probability.toFixed(2)}% de probabilidad acumulada</div>
             </div>
 
-            <button className="primary-action" onClick={() => setCount((value) => value + 1)}>
-              <span>+1</span> Registrar encuentro
+            <div className="encounter-step">
+              <label htmlFor="encounter-step">ENCUENTROS POR REGISTRO</label>
+              <div>
+                {[1, 2, 3, 5].map((value) => (
+                  <button key={value} className={encounterStep === value ? "active" : ""} onClick={() => setEncounterStep(value)}>{value}</button>
+                ))}
+                <input
+                  id="encounter-step"
+                  type="number"
+                  min="1"
+                  inputMode="numeric"
+                  value={encounterStep}
+                  onChange={(event) => setEncounterStep(Math.max(1, readPositiveInteger(event.target.value, 1)))}
+                  aria-label="Encuentros que se suman con cada registro"
+                />
+              </div>
+              <small>Úsalo si juegas en varios dispositivos o revisas varios Pokémon a la vez.</small>
+            </div>
+
+            <button className="primary-action" onClick={() => setCount((value) => value + encounterStep)}>
+              <span>+{encounterStep}</span> Registrar {encounterStep === 1 ? "encuentro" : "encuentros"}
             </button>
             <div className="secondary-actions">
-              <button onClick={() => setCount((value) => Math.max(0, value - 1))}><Icon name="minus" /> Restar uno</button>
+              <button onClick={() => setCount((value) => Math.max(0, value - encounterStep))}><Icon name="minus" /> Restar {encounterStep}</button>
               <button onClick={() => setConfirmReset(true)}><Icon name="rotate" /> Reiniciar</button>
             </div>
           </section>
@@ -330,6 +434,31 @@ function App() {
                 <span className="guide-kicker">{section.label}</span>
                 <h2>{section.title}</h2>
                 <p className="guide-intro">{section.intro}</p>
+                <div className="guide-generation-picker">
+                  <span>ELIGE TU GENERACIÓN</span>
+                  <div>
+                    {(Object.keys(generationGuides).map(Number) as GuideGeneration[]).map((generation) => (
+                      <button
+                        key={generation}
+                        className={guideGeneration === generation ? "active" : ""}
+                        onClick={() => setGuideGeneration(generation)}
+                      >
+                        {generation}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <article className="generation-profile">
+                  <div className="generation-profile-heading">
+                    <span>{generationGuides[guideGeneration].label}</span>
+                    <div>
+                      <h3>{generationGuides[guideGeneration].games}</h3>
+                      <p>{generationGuides[guideGeneration].odds}</p>
+                    </div>
+                  </div>
+                  <p>{generationGuides[guideGeneration].method}</p>
+                  <div><Icon name="sparkle" /><span>{generationGuides[guideGeneration].tip}</span></div>
+                </article>
                 <div className="article-list">
                   {section.articles.map((article, index) => (
                     <article key={article.title}>
@@ -339,6 +468,7 @@ function App() {
                   ))}
                 </div>
                 <div className="guide-note"><Icon name="sparkle" /><p><strong>Consejo del cazador</strong>Comprueba siempre que el encuentro elegido no tenga bloqueo shiny antes de comenzar.</p></div>
+                <p className="guide-sources">Información ampliada con las guías de <a href="https://infipoke.com/es/guides/shiny-hunting" target="_blank" rel="noreferrer">Infipoke</a> y <a href="https://pikapedia.com/blog/shiny-hunting-methods" target="_blank" rel="noreferrer">Pikapedia</a>. Las probabilidades pueden variar según el juego y la versión.</p>
               </section>
             ))}
           </div>
